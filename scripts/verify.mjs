@@ -1482,7 +1482,7 @@ console.log('--- 工作区根目录白名单（防陌生文件混入）---');
 // 它的正确处置是**删掉**，不是合法化；如果环境再次落缓存，就让这条断言失败提醒你手动清理。
 const { readdirSync } = require('node:fs');
 
-/** 根目录一级条目白名单（8 个目录 + 13 个文件 = 21 项） */
+/** 根目录一级条目白名单（8 个目录 + 12 个文件 = 20 项） */
 const ROOT_WHITELIST = [
   // 目录
   '.github',
@@ -1508,8 +1508,16 @@ const ROOT_WHITELIST = [
   'tsconfig.json',
 ];
 
-/** 合法的动态项：打包产物 */
-const ROOT_DYNAMIC = [/\.vsix$/];
+/**
+ * 合法的动态项 —— 这些条目「本地可能没有、CI 一定有」（或反之），所以**不能**进白名单：
+ *
+ *  - `*.vsix`：打包产物，会随打包出现 / 消失
+ *  - `.git`：`git init` 之前本地没有，而 CI clone 下来天然带一个
+ *
+ * ⚠️ `.git` **绝不能**放进 `ROOT_WHITELIST` —— 那样未 init 的本地环境会反过来失败。
+ * 踩过：这条断言在本地通过、在 CI 直接失败，根因就是它把「本地此刻的状态」当成了通用规则。
+ */
+const ROOT_DYNAMIC = [/\.vsix$/, /^\.git$/];
 
 // verify 由 `npm run verify` 从项目根启动，所以 cwd 就是仓库根
 const rootEntries = readdirSync(process.cwd())

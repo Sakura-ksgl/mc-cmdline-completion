@@ -268,7 +268,7 @@ Before pushing, press `F5` and walk through the relevant section.
 ```powershell
 npm install
 npm run compile
-npm run verify     # must print 断言总数：N / 278 with no failures
+npm run verify     # must print 断言总数：N / 279 with no failures
 ```
 
 If you touched packaging:

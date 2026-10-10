@@ -127,7 +127,7 @@ npm run compile
 npm run verify
 ```
 
-> `verify` prints `断言总数：N / 278` and **fails if the count does not match** — a silently skipped
+> `verify` prints `断言总数：N / 279` and **fails if the count does not match** — a silently skipped
 > assertion is treated as a failure. So do not look at `FAIL: 0` alone; look at that total too.
 
 ## Architecture
