@@ -1,0 +1,65 @@
+# 构建与发布流程
+#
+# 触发：
+#   - push 到 main：编译 + 验收 + 打包，.vsix 作为 artifact 上传
+#   - push v* 标签：额外建一个 Release 并把 .vsix 附上去
+#   - PR 到 main：只跑编译 + 验收（不打包、不发 Release）
+
+name: Build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+
+# 建 Release 需要写权限
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      # 用 lockfile 安装，保证 CI 里的 @types/vscode 与 engines.vscode 一致
+      # （vsce 会检查两者关系，漂移了就直接拒绝打包）
+      - name: Install dependencies
+        run: npm ci
+
+      # 本项目的编译由 vscode:prepublish 负责，但这里显式跑一次，
+      # 免得后面 vsce 的报错里混进编译问题
+      - name: Compile
+        run: npm run compile
+
+      # 278 项断言，纯 Node、不依赖 VSCode —— 等于每次 push 白得一套回归
+      - name: Acceptance tests
+        run: npm run verify
+
+      - name: Package VSIX
+        run: npx --yes @vscode/vsce package
+
+      - name: Upload VSIX artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mc-cmdline-completion-vsix
+          path: '*.vsix'
+          if-no-files-found: error
+
+      # 只有打标签才发 Release
+      - name: Publish Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: '*.vsix'
+          generate_release_notes: true

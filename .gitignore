@@ -1,0 +1,7 @@
+node_modules/
+out/
+*.vsix
+.npm-cache/
+
+# PowerShell 在本环境隔离 HOME 下产生的缓存目录
+Microsoft/

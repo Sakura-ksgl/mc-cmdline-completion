@@ -1,0 +1,17 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+# Markdown 里行尾两个空格是「硬换行」，不要被编辑器自动去掉
+[*.md]
+trim_trailing_whitespace = false
+
+# Windows 批处理脚本按惯例用 CRLF（本项目里没有，留着以防将来加）
+[*.{bat,cmd}]
+end_of_line = crlf

@@ -1,0 +1,101 @@
+{
+  "name": "mc-cmdline-completion",
+  "displayName": "MC Cmdline Completion",
+  "description": "把 VSCode 补全改造成 Minecraft 指令输入式的分段命令行交互（学习项目，不执行任何 Minecraft 指令）",
+  "version": "0.1.0",
+  "publisher": "local",
+  "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sakura-ksgl/mc-cmdline-completion.git"
+  },
+  "engines": {
+    "vscode": "^1.140.0"
+  },
+  "categories": [
+    "Other",
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "mcSuggest.selectNext",
+        "title": "MC 补全：选中下一项",
+        "category": "MC Cmdline"
+      },
+      {
+        "command": "mcSuggest.selectPrev",
+        "title": "MC 补全：选中上一项",
+        "category": "MC Cmdline"
+      },
+      {
+        "command": "mcSuggest.trigger",
+        "title": "MC 补全：手动弹出候选",
+        "category": "MC Cmdline"
+      },
+      {
+        "command": "mcSuggest.showStatus",
+        "title": "MC 补全：查看适配器状态",
+        "category": "MC Cmdline"
+      },
+      {
+        "command": "mcSuggest.inspectSegment",
+        "title": "MC 补全：查看光标处的切段结果",
+        "category": "MC Cmdline"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "mcSuggest.selectNext",
+        "key": "tab",
+        "when": "editorTextFocus && suggestWidgetVisible && config.mcSuggest.tabMovesSelection"
+      },
+      {
+        "command": "mcSuggest.selectPrev",
+        "key": "shift+tab",
+        "when": "editorTextFocus && suggestWidgetVisible && config.mcSuggest.tabMovesSelection"
+      }
+    ],
+    "configuration": {
+      "title": "MC Cmdline Completion",
+      "properties": {
+        "mcSuggest.tabMovesSelection": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "候选列表可见时，用 `Tab` / `Shift+Tab` 上下移动选择，而不是直接接受补全（也不缩进）。关闭后恢复 VSCode 原生 Tab 行为。"
+        },
+        "mcSuggest.debugLog": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "在开发者工具 Console 打印补全链路的诊断信息（切段结果、各级候选条数、每个候选的 range / kind / filterText）。扩展开发模式（F5）下会强制打开。"
+        }
+      }
+    },
+    "configurationDefaults": {
+      "editor.acceptSuggestionOnEnter": "on",
+      "editor.suggest.preview": false,
+      "editor.suggest.showWords": false,
+      "editor.quickSuggestions": {
+        "other": "on",
+        "comments": "off",
+        "strings": "on"
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "verify": "node scripts/verify.mjs",
+    "vscode:prepublish": "npm run compile"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.4.0"
+  }
+}
